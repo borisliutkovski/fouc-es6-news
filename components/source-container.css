@@ -1,0 +1,50 @@
+.source-container button {
+  cursor: pointer;
+}
+
+.source-container .categories {
+  margin: 10px 0;
+}
+
+.source-container .categories button {
+  margin-right: 7px;
+  font-size: 1rem;
+  text-transform: capitalize;
+  border-radius: 10px;
+  padding: 7px;
+}
+
+.source-container .sources {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.source-container .sources .source-name {
+  white-space: nowrap;
+}
+
+.toggle-container {
+  padding-left: 7px;
+}
+
+.source-container .sources .source {
+  margin-right: 7px;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  border-radius: 10px;
+  padding: 2px 7px;
+}
+
+.source-container button.active {
+  color: #008aff;
+}
+
+.source-container button:hover {
+  color: #0081ff80;
+}
+
+.source-container {
+  background-color: white;
+  width: 100%;
+  padding: 20px;
+}
