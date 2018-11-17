@@ -1,4 +1,5 @@
-import { apiKey } from '../config.js'
+import { apiKey } from '../config'
+import '../css/source-container.scss'
 
 const Button = (className, textContent, onclick) => {
   const el = document.createElement('button')
@@ -37,22 +38,23 @@ const Toggle = (onclick, initialState = false) => {
   return buttonEl
 }
 
-const _categories = Symbol()
 const categories = Symbol()
-const initialSources = Symbol()
-const _sources = Symbol()
 const sourcesSym = Symbol()
 const loadSources = Symbol()
 const initToggle = Symbol()
 const toggleContent = Symbol()
 const onSourceClick = Symbol()
 const onCategoryClick = Symbol()
-const selectedCategory = Symbol()
-const categoriesEl = Symbol()
-const sourcesEl = Symbol()
-const selectedSource = Symbol()
 
 export default class SourceContainer {
+  #_categories = []
+  #categoriesEl
+  #sourcesEl
+  #initialSources = []
+  #_sources = []
+  #selectedCategory
+  #selectedSource
+
   constructor() {
     this.element = document.createElement('div')
     this.element.innerHTML = `
@@ -60,8 +62,8 @@ export default class SourceContainer {
       <div class="categories"></div>
       <div class="sources"></div>
     `
-    this[categoriesEl] = this.element.querySelector('.categories')
-    this[sourcesEl] = this.element.querySelector('.sources')
+    this.categoriesEl = this.element.querySelector('.categories')
+    this.sourcesEl = this.element.querySelector('.sources')
 
     this.element.className = 'source-container'
     this.onSourceChange = () => { }
@@ -77,62 +79,62 @@ export default class SourceContainer {
     const res = await fetch(`https://newsapi.org/v2/sources?language=en&apiKey=${apiKey}`)
     const { sources } = await res.json()
     this[sourcesSym] = sources
-    this[initialSources] = sources
+    this.initialSources = sources
     this[categories] = []
   }
 
   set [categories](newCategories = []) {
-    if (newCategories.length === 0) {
-      newCategories = [...new Set(this[initialSources].map(({ category }) => category))]
+    if (!newCategories?.length) {
+      newCategories = [...new Set(this.initialSources.map(({ category }) => category))]
     }
 
-    this[categoriesEl].innerHTML = ''
+    this.categoriesEl.innerHTML = ''
 
-    this[_categories] = newCategories
-    this[_categories].forEach(category => this[categoriesEl].appendChild(
-      Category({ value: category, isActive: this[selectedCategory] === category }, () => this[onCategoryClick](category))))
+    this._categories = newCategories
+    this._categories.forEach(category => this.categoriesEl.appendChild(
+      Category({ value: category, isActive: this.selectedCategory === category }, () => this[onCategoryClick](category))))
   }
 
   get [categories]() {
-    return this[_categories]
+    return this._categories
   }
 
   [onCategoryClick](newCategory) {
-    this[selectedCategory] = this[selectedCategory] === newCategory
+    this.selectedCategory = this.selectedCategory === newCategory
       ? undefined
       : newCategory
 
     this[categories] = this[categories]
 
-    this[sourcesSym] = this[selectedCategory]
-      ? this[initialSources].filter(({ category }) => category === newCategory)
-      : this[initialSources]
+    this[sourcesSym] = this.selectedCategory
+      ? this.initialSources.filter(({ category }) => category === newCategory)
+      : this.initialSources
   }
 
   set [sourcesSym](newSources = []) {
-    this[_sources] = newSources
+    this._sources = newSources
 
-    this[sourcesEl].innerHTML = ''
+    this.sourcesEl.innerHTML = ''
 
     for (const source of newSources) {
-      this[sourcesEl].appendChild(
+      this.sourcesEl.appendChild(
         Source(
-          { ...source, isActive: source === this[selectedSource] },
+          { ...source, isActive: source === this.selectedSource },
           () => this[onSourceClick](source)))
     }
   }
 
   get [sourcesSym]() {
-    return this[_sources]
+    return this._sources
   }
 
   [onSourceClick](source) {
-    this[selectedSource] = this[selectedSource] === source
+    this.selectedSource = this.selectedSource === source
       ? undefined
       : source
 
-    this[sourcesSym] = this[_sources]
-    this.onSourceChange(this[selectedSource])
+    this[sourcesSym] = this._sources
+    this.onSourceChange(this.selectedSource)
   }
 
   [initToggle]() {
@@ -145,11 +147,11 @@ export default class SourceContainer {
 
   [toggleContent](isShown) {
     if (isShown) {
-      this[categoriesEl].removeAttribute('hidden')
-      this[sourcesEl].removeAttribute('hidden')
+      this.categoriesEl.removeAttribute('hidden')
+      this.sourcesEl.removeAttribute('hidden')
     } else {
-      this[categoriesEl].setAttribute('hidden', '')
-      this[sourcesEl].setAttribute('hidden', '')
+      this.categoriesEl.setAttribute('hidden', '')
+      this.sourcesEl.setAttribute('hidden', '')
     }
   }
 }

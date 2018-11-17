@@ -1,0 +1,50 @@
+.source-container {
+  background-color: white;
+  width: 100%;
+  padding: 20px;
+
+  button {
+    cursor: pointer;
+
+    &.active {
+      color: #008aff;
+    }
+
+    &:hover {
+      color: #0081ff80;
+    }
+  }
+
+  .categories {
+    margin: 10px 0;
+
+    button {
+      margin-right: 7px;
+      font-size: 1rem;
+      text-transform: capitalize;
+      border-radius: 10px;
+      padding: 7px;
+    }
+  }
+
+  .sources {
+    display: flex;
+    flex-wrap: wrap;
+
+    .source-name {
+      white-space: nowrap;
+    }
+
+    .source {
+      margin-right: 7px;
+      font-size: 0.9rem;
+      text-transform: capitalize;
+      border-radius: 10px;
+      padding: 2px 7px;
+    }
+  }
+}
+
+.toggle-container {
+  padding-left: 7px;
+}
