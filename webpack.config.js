@@ -5,6 +5,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
+const outFolder = 'docs'
+
 module.exports = (env, argv) => {
   const devMode = argv.mode === 'development'
 
@@ -15,7 +17,7 @@ module.exports = (env, argv) => {
     },
     output: {
       filename: devMode ? '[name].js' : '[name].[contenthash].js',
-      path: path.resolve(__dirname, 'dist')
+      path: path.resolve(__dirname, outFolder)
     },
     optimization: {
       minimizer: [
@@ -38,7 +40,7 @@ module.exports = (env, argv) => {
       }
     },
     plugins: [
-      new CleanWebpackPlugin(['dist']),
+      new CleanWebpackPlugin([outFolder]),
       new MiniCssExtractPlugin({
         filename: devMode ? 'style.css' : 'style.[contenthash].css'
       }),
