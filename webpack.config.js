@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         filename: 'index.html',
         favicon: 'favicon.png',
-        template: 'index.html',
+        template: 'index-tpl.html',
         excludeChunks: ['polyfills']
       })
     ],
