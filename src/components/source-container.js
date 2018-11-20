@@ -1,5 +1,4 @@
 import { apiKey } from '../config'
-import '../css/source-container.scss'
 
 const Button = (className, textContent, onclick) => {
   const el = document.createElement('button')

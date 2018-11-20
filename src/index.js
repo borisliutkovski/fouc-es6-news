@@ -3,9 +3,6 @@ import Headline from './components/headline'
 import SourceContainer from './components/source-container'
 import { apiKey } from './config'
 
-import './css/index.scss'
-
-
 const render = () => {
   const setHeadlines = async ({ articles }) => {
     const headlineContainer = document.querySelector('.headline-container')
@@ -47,4 +44,3 @@ if ('fetch' in window) {
   console.warn('import fetch')
   import('./polyfills').then(render)
 }
-

@@ -1,5 +1,3 @@
-import '../css/headline.scss'
-
 export default ({ title, description, source, content, url, urlToImage }, onload) => {
   const el = document.createElement('article')
   el.className = 'headline'

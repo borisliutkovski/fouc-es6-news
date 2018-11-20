@@ -10,65 +10,158 @@ const outFolder = 'docs'
 module.exports = (env, argv) => {
   const devMode = argv.mode === 'development'
 
-  return {
-    entry: {
-      index: './src/index.js',
-      polyfills: './src/polyfills.js'
-    },
-    output: {
-      filename: devMode ? '[name].js' : '[name].[contenthash].js',
-      path: path.resolve(__dirname, outFolder)
-    },
-    optimization: {
-      minimizer: [
-        new UglifyJsPlugin({
-          cache: true,
-          parallel: true,
-          sourceMap: devMode
-        }),
-        new OptimizeCSSAssetsPlugin({})
+  return [
+    {
+      entry: {
+        index: './src/index.js',
+        polyfills: './src/polyfills.js'
+      },
+      output: {
+        filename: '[name].es6.js',
+        path: path.resolve(__dirname, outFolder)
+      },
+      optimization: {
+        minimizer: [
+          new UglifyJsPlugin({
+            cache: true,
+            parallel: true,
+            sourceMap: devMode
+          }),
+        ],
+      },
+      plugins: [
+        new CleanWebpackPlugin([outFolder]),
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          favicon: 'favicon.png',
+          template: 'index-tpl.html',
+          excludeChunks: ['polyfills', 'index']
+        })
       ],
-      splitChunks: {
-        cacheGroups: {
-          styles: {
-            name: 'styles',
-            test: /\.css/,
-            chunks: 'all',
-            enforce: true
+      devtool: devMode ? 'source-map' : false,
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  [
+                    "@babel/preset-env",
+                    {
+                      targets: {
+                        browsers: [
+                          'Chrome >= 60',
+                          'Safari >= 10.1',
+                          'iOS >= 10.3',
+                          'Firefox >= 54',
+                          'Edge >= 15',
+                        ]
+                      }
+                    }
+                  ]
+                ],
+                plugins: [
+                  "syntax-async-functions",
+                  "@babel/plugin-proposal-optional-chaining",
+                  "@babel/plugin-proposal-class-properties",
+                  "dynamic-import-webpack"
+                ]
+              }
+            }
           }
-        }
+        ]
       }
     },
-    plugins: [
-      new CleanWebpackPlugin([outFolder]),
-      new MiniCssExtractPlugin({
-        filename: devMode ? 'style.css' : 'style.[contenthash].css'
-      }),
-      new HtmlWebpackPlugin({
-        filename: 'index.html',
-        favicon: 'favicon.png',
-        template: 'index-tpl.html',
-        excludeChunks: ['polyfills']
-      })
-    ],
-    devtool: devMode ? 'source-map' : false,
-    module: {
-      rules: [
-        {
-          test: /\.s?[ac]ss$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: devMode } },
-            { loader: 'sass-loader', options: { sourceMap: devMode } },
-            'postcss-loader'
-          ]
-        },
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: 'babel-loader'
+    {
+      entry: {
+        index: './src/index.js',
+      },
+      output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, outFolder)
+      },
+      optimization: {
+        minimizer: [
+          new UglifyJsPlugin({
+            cache: true,
+            parallel: true,
+            sourceMap: devMode
+          })
+        ]
+      },
+      devtool: devMode ? 'source-map' : false,
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  [
+                    "@babel/preset-env",
+                    {
+                      targets: "last 2 version, IE 11"
+                    }
+                  ]
+                ],
+                plugins: [
+                  "syntax-async-functions",
+                  "@babel/plugin-proposal-optional-chaining",
+                  "@babel/plugin-proposal-class-properties",
+                  "dynamic-import-webpack"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      entry: {
+        css: './src/css.js',
+      },
+      output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, outFolder)
+      },
+      optimization: {
+        minimizer: [
+          new OptimizeCSSAssetsPlugin({})
+        ],
+        splitChunks: {
+          cacheGroups: {
+            styles: {
+              name: 'styles',
+              test: /\.css/,
+              chunks: 'all',
+              enforce: true
+            }
+          }
         }
-      ]
+      },
+      plugins: [
+        new MiniCssExtractPlugin({
+          filename: 'style.css'
+        })
+      ],
+      module: {
+        rules: [
+          {
+            test: /\.s?[ac]ss$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              { loader: 'css-loader', options: { url: false, sourceMap: devMode } },
+              { loader: 'sass-loader', options: { sourceMap: devMode } },
+              'postcss-loader'
+            ]
+          }
+        ]
+      }
     }
-  }
+  ]
 }
