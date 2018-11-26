@@ -32,11 +32,12 @@
     "node-sass": "^4.10.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-cli": "^6.0.1",
+    "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
-    "postcss-loader": "^3.0.0",
     "whatwg-fetch": "^3.0.0"
   }
 }

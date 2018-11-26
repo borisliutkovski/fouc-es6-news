@@ -14,7 +14,8 @@ module.exports = (env, argv) => {
     {
       entry: {
         index: './src/index.js',
-        polyfills: './src/polyfills.js'
+        polyfills: './src/polyfills.js',
+        main: './src/main.js'
       },
       output: {
         filename: '[name].es6.js',
@@ -35,7 +36,7 @@ module.exports = (env, argv) => {
           filename: 'index.html',
           favicon: 'favicon.png',
           template: 'index-tpl.html',
-          excludeChunks: ['polyfills', 'index']
+          excludeChunks: ['polyfills', 'index', 'main']
         })
       ],
       devtool: devMode ? 'source-map' : false,
@@ -71,6 +72,17 @@ module.exports = (env, argv) => {
                 ]
               }
             }
+
+
+          },
+          {
+            test: /\.s?[ac]ss$/,
+            use: [
+              { loader: 'style-loader' },
+              { loader: 'css-loader', options: { url: false, sourceMap: devMode } },
+              { loader: 'sass-loader', options: { sourceMap: devMode } },
+              'postcss-loader'
+            ]
           }
         ]
       }
@@ -78,6 +90,7 @@ module.exports = (env, argv) => {
     {
       entry: {
         index: './src/index.js',
+        main: './src/main.js'
       },
       output: {
         filename: '[name].js',
@@ -117,44 +130,11 @@ module.exports = (env, argv) => {
                 ]
               }
             }
-          }
-        ]
-      }
-    },
-    {
-      entry: {
-        css: './src/css.js',
-      },
-      output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, outFolder)
-      },
-      optimization: {
-        minimizer: [
-          new OptimizeCSSAssetsPlugin({})
-        ],
-        splitChunks: {
-          cacheGroups: {
-            styles: {
-              name: 'styles',
-              test: /\.css/,
-              chunks: 'all',
-              enforce: true
-            }
-          }
-        }
-      },
-      plugins: [
-        new MiniCssExtractPlugin({
-          filename: 'style.css'
-        })
-      ],
-      module: {
-        rules: [
+          },
           {
             test: /\.s?[ac]ss$/,
             use: [
-              MiniCssExtractPlugin.loader,
+              { loader: 'style-loader' },
               { loader: 'css-loader', options: { url: false, sourceMap: devMode } },
               { loader: 'sass-loader', options: { sourceMap: devMode } },
               'postcss-loader'
