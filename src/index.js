@@ -2,6 +2,7 @@ import 'babel-polyfill'
 import Headline from './components/headline'
 import SourceContainer from './components/source-container'
 import { apiKey } from './config'
+import json from './some-config-or-whatever.json'
 
 const render = () => {
   const setHeadlines = async ({ articles }) => {
@@ -35,6 +36,8 @@ const render = () => {
   header.appendChild(sc.element)
 
   loadHeadlines()
+
+  console.warn(json)
 }
 
 if ('fetch' in window) {

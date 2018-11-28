@@ -83,6 +83,12 @@ module.exports = (env, argv) => {
               { loader: 'sass-loader', options: { sourceMap: devMode } },
               'postcss-loader'
             ]
+          },
+          {
+            test: /\.json$/,
+            use: [
+              { loader: path.resolve(__dirname, 'loader', 'json-filter.js') }
+            ]
           }
         ]
       }
@@ -138,6 +144,12 @@ module.exports = (env, argv) => {
               { loader: 'css-loader', options: { url: false, sourceMap: devMode } },
               { loader: 'sass-loader', options: { sourceMap: devMode } },
               'postcss-loader'
+            ]
+          },
+          {
+            test: /\.json$/,
+            use: [
+              { loader: path.resolve(__dirname, 'loader', 'json-filter.js') }
             ]
           }
         ]
