@@ -15,7 +15,6 @@ module.exports = (env, argv) => {
       entry: {
         index: './src/index.js',
         polyfills: './src/polyfills.js',
-        main: './src/main.js'
       },
       output: {
         filename: '[name].es6.js',
@@ -36,7 +35,7 @@ module.exports = (env, argv) => {
           filename: 'index.html',
           favicon: 'favicon.png',
           template: 'index-tpl.html',
-          excludeChunks: ['polyfills', 'index', 'main']
+          excludeChunks: ['polyfills', 'index']
         })
       ],
       devtool: devMode ? 'source-map' : false,
@@ -96,7 +95,6 @@ module.exports = (env, argv) => {
     {
       entry: {
         index: './src/index.js',
-        main: './src/main.js'
       },
       output: {
         filename: '[name].js',

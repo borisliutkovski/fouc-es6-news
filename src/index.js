@@ -1,49 +1,52 @@
 import 'babel-polyfill'
 import Headline from './components/headline'
-import SourceContainer from './components/source-container'
-import { apiKey } from './config'
+import SourceComponent from './components/source'
 import json from './some-config-or-whatever.json'
+import ModalComponent from './components/modal'
+import { loadHeadlines } from './actions/home'
+import getStore from './foycStore'
+import { connect } from './redux/utils'
+require('./css/index.scss')
 
-const render = () => {
-  const setHeadlines = async ({ articles }) => {
-    const headlineContainer = document.querySelector('.headline-container')
-    headlineContainer.innerHTML = ''
+const init = () => {
+  const store = getStore()
+  const dispatch = store.dispatch
 
-    for (const article of articles.filter(({ title }) => !!title)) {
-      const headlineEl = await Headline(article)
-      headlineContainer.appendChild(headlineEl)
+  const render = async ({ articles }) => {
+    const setHeadlines = async () => {
+      const headlineContainer = document.querySelector('.headline-container')
+      headlineContainer.innerHTML = ''
+
+      for (const article of articles.filter(({ title }) => !!title)) {
+        const headlineEl = await Headline(article)
+        headlineContainer.appendChild(headlineEl)
+      }
+    }
+
+    setHeadlines()
+
+    const sourceContainer = document.querySelector('.source-container')
+    if (!sourceContainer.innerHTML) {
+      sourceContainer.appendChild(SourceComponent)
+    }
+
+    const modalContainer = document.querySelector('.modal-container')
+    if (!modalContainer.innerHTML) {
+      modalContainer.append(ModalComponent)
     }
   }
 
-  const loadHeadlines = async id => {
-    const res = await fetch('https://newsapi.org/v2/top-headlines' +
-      '?language=en' +
-      `${id != null ? `&sources=${id}` : ''}` +
-      `&apiKey=${apiKey}`)
-    const json = await res.json()
-    setHeadlines(json)
-  }
+  connect(state => ({
+    articles: state.home.headlines
+  }), store)(render)
 
-  const onSourceChange = source => {
-    loadHeadlines(source && source.id)
-  }
-
-  const sc = new SourceContainer()
-  sc.initialize()
-  sc.onSourceChange = onSourceChange
-  console.log(sc.initialSources)
-  const header = document.querySelector('header')
-  header.appendChild(sc.element)
-
-  loadHeadlines()
-
-  console.warn(json)
+  dispatch(loadHeadlines())
 }
 
 if ('fetch' in window) {
   console.warn('has fetch')
-  render()
+  init()
 } else {
   console.warn('import fetch')
-  import('./polyfills').then(render)
+  import('./polyfills').then(init)
 }
