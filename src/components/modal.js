@@ -1,6 +1,6 @@
 import { connect } from '../redux/utils'
 import getStore from '../foycStore'
-import { hideModal } from '../actions/modal';
+import { hideModal } from '../actions/modal'
 
 const store = getStore()
 const dispatch = store.dispatch

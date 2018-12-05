@@ -1,7 +1,6 @@
 import getStore from '../foycStore'
 import { toggleToggle, selectCategory, selectSource, loadSources } from '../actions/source'
-import { connect } from '../redux/utils';
-import { showModal } from '../actions/modal';
+import { connect } from '../redux/utils'
 
 const Button = (className, textContent, onclick) => {
   const el = document.createElement('button')
@@ -56,9 +55,6 @@ const render = ({ isShown, sources, categories, selectedCategory, selectedSource
 
   toggleEl.appendChild(Toggle(shouldShow => {
     dispatch(toggleToggle())
-    if (Math.random() > 0.2) {
-      dispatch(showModal('RandOmmMmMMMm'))
-    }
   }, isShown))
 
   const categoriesEl = element.querySelector('.categories')

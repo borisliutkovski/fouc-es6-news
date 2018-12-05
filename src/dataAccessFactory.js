@@ -1,13 +1,11 @@
 import { apiKey } from './config'
-import { showModal } from './actions/modal'
-// import getStore from './foycStore'
 
 class DataAccess {
   async getHeadlines(id) {
     const rand = Math.random()
 
     if (rand < 0.3) {
-      // throw new Error('RanDoM')
+      throw new Error('RanDoM')
     }
 
     const res = await fetch('https://newsapi.org/v2/top-headlines' +
@@ -29,8 +27,6 @@ const dao = new DataAccess()
 
 const daoMethodProxies = {}
 
-// const { dispatch } = getStore()
-
 const proxyHandler = {
   get: function (target, prop) {
     if (!daoMethodProxies[prop]) {
@@ -39,12 +35,7 @@ const proxyHandler = {
           console.log(prop + ' request with arguments')
           console.log(argumentsList)
 
-          try {
-            return target(argumentsList)
-          } catch (e) {
-            // dispatch(showModal('Request failed'))
-          }
-
+          return target(argumentsList)
         }
       })
     }
@@ -53,8 +44,6 @@ const proxyHandler = {
   }
 }
 
-const dataAccessProxy = new Proxy(dao, proxyHandler)
-
 export default function () {
-  return dataAccessProxy
+  return new Proxy(dao, proxyHandler)
 }

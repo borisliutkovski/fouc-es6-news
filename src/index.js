@@ -1,8 +1,6 @@
 import 'babel-polyfill'
 import Headline from './components/headline'
 import SourceComponent from './components/source'
-import json from './some-config-or-whatever.json'
-import ModalComponent from './components/modal'
 import { loadHeadlines } from './actions/home'
 import getStore from './foycStore'
 import { connect } from './redux/utils'
@@ -12,7 +10,7 @@ const init = () => {
   const store = getStore()
   const dispatch = store.dispatch
 
-  const render = async ({ articles }) => {
+  const render = async ({ articles, isModalShown }) => {
     const setHeadlines = async () => {
       const headlineContainer = document.querySelector('.headline-container')
       headlineContainer.innerHTML = ''
@@ -30,14 +28,18 @@ const init = () => {
       sourceContainer.appendChild(SourceComponent)
     }
 
-    const modalContainer = document.querySelector('.modal-container')
-    if (!modalContainer.innerHTML) {
-      modalContainer.append(ModalComponent)
+    if (isModalShown) {
+      const modalContainer = document.querySelector('.modal-container')
+      if (!modalContainer.innerHTML) {
+        const modalModule = await import('./components/modal')
+        modalContainer.append(modalModule.default)
+      }
     }
   }
 
   connect(state => ({
-    articles: state.home.headlines
+    articles: state.home.headlines,
+    isModalShown: state.modal.isShown
   }), store)(render)
 
   dispatch(loadHeadlines())
