@@ -1,37 +1,47 @@
 import { apiKey } from './config'
 import { SuperCustomProxy } from './superCustomProxy'
 
-class HttpDao {
+class Dao {
+  async getHeadlines() { }
+  async getSources() { }
+}
+
+class HttpProvider {
   $requestParams
 
   constructor(requestParams) {
     this.$requestParams = requestParams || {}
   }
 
-  get(url, params) {
-    return fetch(`${url}?${this.$getQuery(params)}`, { ...this.$requestParams })
-  }
+  get = (url, params) =>
+    fetch(`${url}?${this.$getQuery(params)}`, { ...this.$requestParams })
 
-  post(url, body) {
-    return fetch(url, { method: 'POST', body, ...this.$requestParams })
-  }
 
-  put(url, body) {
-    return fetch(url, { method: 'PUT', body, ...this.$requestParams })
-  }
+  post = (url, body) =>
+    fetch(url, { method: 'POST', body, ...this.$requestParams })
 
-  delete(url, params) {
-    return fetch(`${url}?${this.$getQuery(params)}`, { method: 'DELETE', ...this.$requestParams })
-  }
 
-  $getQuery(params) {
-    return Object.keys(params)
+  put = (url, body) =>
+    fetch(url, { method: 'PUT', body, ...this.$requestParams })
+
+
+  delete = (url, params) =>
+    fetch(`${url}?${this.$getQuery(params)}`, { method: 'DELETE', ...this.$requestParams })
+
+
+  $getQuery = params =>
+    Object.keys(params)
       .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
       .join('&')
-  }
 }
 
-class FoycHttpDao extends HttpDao {
+class FoycHttpDao extends Dao {
+
+  $httpProvider
+  constructor() {
+    super()
+    this.$httpProvider = new HttpProvider()
+  }
 
   getHeadlines = async id => {
     const rand = Math.random()
@@ -40,7 +50,7 @@ class FoycHttpDao extends HttpDao {
       throw new Error('RanDoM')
     }
 
-    const res = await this.get('https://newsapi.org/v2/top-headlines', {
+    const res = await this.$httpProvider.get('https://newsapi.org/v2/top-headlines', {
       language: 'en',
       sources: id,
       apiKey
@@ -50,8 +60,8 @@ class FoycHttpDao extends HttpDao {
     return json
   }
 
-  async getSources() {
-    const res = await this.get('https://newsapi.org/v2/top-headlines', {
+  getSources = async () => {
+    const res = await this.$httpProvider.get('https://newsapi.org/v2/sources', {
       language: 'en',
       apiKey
     })
@@ -61,7 +71,7 @@ class FoycHttpDao extends HttpDao {
   }
 }
 
-class MockDao {
+class MockDao extends Dao {
   getHeadlines() {
     return Promise.resolve({
       articles: [
@@ -121,7 +131,7 @@ export function setShouldMock(mock) {
   shouldReturnMock = !!mock
 }
 
-export default function() {
+export default function () {
   if (shouldReturnMock) return new MockDaoFactory()
   return new HttpDaoFactory()
 }
