@@ -1,6 +1,12 @@
 import { apiKey } from './config'
+import { SuperCustomProxy } from './superCustomProxy';
 
-class DataAccess {
+class Dao {
+  async getHeadlines() { }
+  async getSources() { }
+}
+
+class HttpDao extends Dao {
   async getHeadlines(id) {
     const rand = Math.random()
 
@@ -23,27 +29,88 @@ class DataAccess {
   }
 }
 
-const dao = new DataAccess()
+class MockDao extends Dao {
+  getHeadlines() {
+    return Promise.resolve({
+      articles: [
+        { title: 'asdf', description: 'asdgdfh' },
+        { title: 'asdf', description: 'asdgdfh' },
+        { title: 'asdf', description: 'asdgdfh' },
+        { title: 'asdf', description: 'asdgdfh' },
+      ]
+    })
+  }
 
-const daoMethodProxies = {}
-
-const proxyHandler = {
-  get: function (target, prop) {
-    if (!daoMethodProxies[prop]) {
-      daoMethodProxies[prop] = new Proxy(target[prop], {
-        apply: function (target, thisArg, argumentsList) {
-          console.log(prop + ' request with arguments')
-          console.log(argumentsList)
-
-          return target(argumentsList)
-        }
-      })
-    }
-
-    return daoMethodProxies[prop]
+  getSources() {
+    return [
+      { name: 'asdfsadf' },
+      { name: 'asdfsadf' },
+      { name: 'asdfsadf' },
+      { name: 'asdfsadf' },
+    ]
   }
 }
 
-export default function () {
-  return new Proxy(dao, proxyHandler)
+const getDaoProxy = dao => {
+  // const daoMethodProxies = {}
+
+  // const proxyHandler = {
+  //   get: function (target, prop) {
+  //     if (!daoMethodProxies[prop]) {
+  //       daoMethodProxies[prop] = new Proxy(target[prop], {
+  //         apply: function (target, thisArg, argumentsList) {
+  //           console.log(prop + ' request with arguments')
+  //           console.log(argumentsList)
+
+  //           return target(argumentsList)
+  //         }
+  //       })
+  //     }
+
+  //     return daoMethodProxies[prop]
+  //   }
+  // }
+
+  const handler = {
+    call: function (methodName, target, thisArg, argumentsList) {
+      console.log(methodName + ' request with arguments')
+      console.log(argumentsList)
+
+      return target(argumentsList)
+    }
+  }
+
+  return new SuperCustomProxy(dao, handler)
+
+  // return new Proxy(dao, proxyHandler)
+}
+
+class DaoFactory {
+  create() { }
+}
+
+class HttpDaoFactory extends DaoFactory {
+  create() {
+    return getDaoProxy(new HttpDao())
+  }
+}
+
+class MockDaoFactory extends DaoFactory {
+  create() {
+    return getDaoProxy(new MockDao())
+  }
+}
+
+let shouldReturnMock = false
+
+/**
+ * Should be called with true when running tests or whatever.
+ */
+export function setShouldMock(mock) {
+  shouldReturnMock = !!mock
+}
+
+export default function() {
+  if (shouldReturnMock) return new MockDaoFactory()
+  return new HttpDaoFactory()
 }

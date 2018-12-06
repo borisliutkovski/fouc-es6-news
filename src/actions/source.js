@@ -1,7 +1,8 @@
 import { loadHeadlines } from './home'
-import getDao from '../dataAccessFactory'
+import getDaoFactory from '../dataAccessFactory'
 
-const dao = getDao()
+const daoFactory = getDaoFactory()
+const dao = daoFactory.create()
 
 export const TOGGLE_TOGGLE = 'TOGGLE_TOGGLE'
 export const toggleToggle = () => ({ type: TOGGLE_TOGGLE })

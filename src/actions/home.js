@@ -1,7 +1,8 @@
-import getDao from '../dataAccessFactory'
+import getDaoFactory from '../dataAccessFactory'
 import { showModal } from './modal'
 
-const dao = getDao()
+const daoFactory = getDaoFactory()
+const dao = daoFactory.create()
 
 export const START_LOADING_HEADLINES = 'START_LOADING_HEADLINES'
 export const DONE_LOADING_HEADLINES = 'DONE_LOADING_HEADLINES'
