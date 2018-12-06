@@ -52,25 +52,6 @@ class MockDao extends Dao {
 }
 
 const getDaoProxy = dao => {
-  // const daoMethodProxies = {}
-
-  // const proxyHandler = {
-  //   get: function (target, prop) {
-  //     if (!daoMethodProxies[prop]) {
-  //       daoMethodProxies[prop] = new Proxy(target[prop], {
-  //         apply: function (target, thisArg, argumentsList) {
-  //           console.log(prop + ' request with arguments')
-  //           console.log(argumentsList)
-
-  //           return target(argumentsList)
-  //         }
-  //       })
-  //     }
-
-  //     return daoMethodProxies[prop]
-  //   }
-  // }
-
   const handler = {
     call: function (methodName, target, thisArg, argumentsList) {
       console.log(methodName + ' request with arguments')
@@ -81,8 +62,6 @@ const getDaoProxy = dao => {
   }
 
   return new SuperCustomProxy(dao, handler)
-
-  // return new Proxy(dao, proxyHandler)
 }
 
 class DaoFactory {
