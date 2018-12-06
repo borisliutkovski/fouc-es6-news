@@ -10,7 +10,7 @@ export class SuperCustomProxy {
 
     updHandler.get = function (target, prop) {
       if (typeof target[prop] !== 'function') {
-        return get(target, prop)
+        return get ? get(target, prop) : target[prop]
       }
 
       if (!methods[prop]) {
