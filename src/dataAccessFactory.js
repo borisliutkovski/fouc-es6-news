@@ -42,12 +42,12 @@ class MockDao extends Dao {
   }
 
   getSources() {
-    return [
+    return Promise.resolve([
       { name: 'asdfsadf' },
       { name: 'asdfsadf' },
       { name: 'asdfsadf' },
       { name: 'asdfsadf' },
-    ]
+    ])
   }
 }
 
