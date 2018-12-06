@@ -1,32 +1,26 @@
 import { apiKey } from './config'
 import { SuperCustomProxy } from './superCustomProxy'
 
-class Dao {
-  async getHeadlines() { }
-  async getSources() { }
-}
-
-class HttpDao extends Dao {
+class HttpDao {
   $requestParams
 
   constructor(requestParams) {
-    super()
     this.$requestParams = requestParams || {}
   }
 
-  $get(url, params) {
+  get(url, params) {
     return fetch(`${url}?${this.$getQuery(params)}`, { ...this.$requestParams })
   }
 
-  $post(url, body) {
+  post(url, body) {
     return fetch(url, { method: 'POST', body, ...this.$requestParams })
   }
 
-  $put(url, body) {
+  put(url, body) {
     return fetch(url, { method: 'PUT', body, ...this.$requestParams })
   }
 
-  $delete(url, params) {
+  delete(url, params) {
     return fetch(`${url}?${this.$getQuery(params)}`, { method: 'DELETE', ...this.$requestParams })
   }
 
@@ -35,6 +29,9 @@ class HttpDao extends Dao {
       .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
       .join('&')
   }
+}
+
+class FoycHttpDao extends HttpDao {
 
   getHeadlines = async id => {
     const rand = Math.random()
@@ -43,7 +40,7 @@ class HttpDao extends Dao {
       throw new Error('RanDoM')
     }
 
-    const res = await this.$get('https://newsapi.org/v2/top-headlines', {
+    const res = await this.get('https://newsapi.org/v2/top-headlines', {
       language: 'en',
       sources: id,
       apiKey
@@ -54,7 +51,7 @@ class HttpDao extends Dao {
   }
 
   async getSources() {
-    const res = await this.$get('https://newsapi.org/v2/top-headlines', {
+    const res = await this.get('https://newsapi.org/v2/top-headlines', {
       language: 'en',
       apiKey
     })
@@ -64,7 +61,7 @@ class HttpDao extends Dao {
   }
 }
 
-class MockDao extends Dao {
+class MockDao {
   getHeadlines() {
     return Promise.resolve({
       articles: [
@@ -105,7 +102,7 @@ class DaoFactory {
 
 class HttpDaoFactory extends DaoFactory {
   create() {
-    return getDaoProxy(new HttpDao())
+    return getDaoProxy(new FoycHttpDao())
   }
 }
 
