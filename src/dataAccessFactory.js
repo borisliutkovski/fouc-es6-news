@@ -1,5 +1,5 @@
 import { apiKey } from './config'
-import { SuperCustomProxy } from './superCustomProxy';
+import { SuperCustomProxy } from './superCustomProxy'
 
 class Dao {
   async getHeadlines() { }
@@ -7,23 +7,58 @@ class Dao {
 }
 
 class HttpDao extends Dao {
-  async getHeadlines(id) {
+  $requestParams
+
+  constructor(requestParams) {
+    super()
+    this.$requestParams = requestParams || {}
+  }
+
+  $get(url, params) {
+    return fetch(`${url}?${this.$getQuery(params)}`, { ...this.$requestParams })
+  }
+
+  $post(url, body) {
+    return fetch(url, { method: 'POST', body, ...this.$requestParams })
+  }
+
+  $put(url, body) {
+    return fetch(url, { method: 'PUT', body, ...this.$requestParams })
+  }
+
+  $delete(url, params) {
+    return fetch(`${url}?${this.$getQuery(params)}`, { method: 'DELETE', ...this.$requestParams })
+  }
+
+  $getQuery(params) {
+    return Object.keys(params)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+      .join('&')
+  }
+
+  getHeadlines = async id => {
     const rand = Math.random()
 
     if (rand < 0.3) {
       throw new Error('RanDoM')
     }
 
-    const res = await fetch('https://newsapi.org/v2/top-headlines' +
-      '?language=en' +
-      `${id != null ? `&sources=${id}` : ''}` +
-      `&apiKey=${apiKey}`)
+    const res = await this.$get('https://newsapi.org/v2/top-headlines', {
+      language: 'en',
+      sources: id,
+      apiKey
+    })
+
     const json = await res.json()
     return json
   }
 
   async getSources() {
-    const res = await fetch(`https://newsapi.org/v2/sources?language=en&apiKey=${apiKey}`)
+    const res = await this.$get('https://newsapi.org/v2/top-headlines', {
+      language: 'en',
+      apiKey
+    })
+
     const { sources } = await res.json()
     return sources
   }

@@ -6,7 +6,7 @@ export class SuperCustomProxy {
 
     const { call, get, ...updHandler } = handler
 
-    const methods = {};
+    const methods = {}
 
     updHandler.get = function (target, prop) {
       if (typeof target[prop] !== 'function') {
